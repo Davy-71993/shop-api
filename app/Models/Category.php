@@ -9,10 +9,14 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $fillable = [ 'name' ];
+    protected $fillable = [ 'name', 'parent_category_id' ];
+
+    public function parentCategory(){
+        return $this->belongsTo(ParentCategory::class);
+    }
 
     public function listings(){
-        return $this->belongsToMany(Listing::class);
+        return $this->hasMany(Listing::class);
     }
 
     public function brands(){

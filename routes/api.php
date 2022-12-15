@@ -26,7 +26,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // Public Routes
-Route::get('/listings', [ListingController::class, 'index']);
+Route::apiResource('/listings', ListingController::class);
 
 // Private Routes
 Route::group(['middleware' => ['auth:sanctum']], function(){

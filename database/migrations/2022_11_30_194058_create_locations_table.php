@@ -15,6 +15,8 @@ return new class extends Migration
     {
         Schema::create('locations', function (Blueprint $table) {
             $table->id();
+            $table->string('state');
+            $table->string('city');
             $table->integer('longitude');
             $table->integer('latitude');
             $table->foreignId('listing_id');

@@ -11,7 +11,8 @@ class Listing extends Model
 
     protected $fillable = [
         'price', 'name', 'description', 
-        'quantity', 'condition', 'brand_id', 'user_id'
+        'quantity', 'condition', 'brand_id', 'user_id',
+        'category_id'
     ];
 
     public function user(){
@@ -30,15 +31,15 @@ class Listing extends Model
         return $this->hasMany(Rating::class);
     }
 
-    public function rating(){
-        $ratings = $this->ratings;
-        $values = [];
-        foreach ($ratings as $rating) {
-            // $values.push($rating->value);
-        }
-        $count = $this->ratings->count();
-        return $ratings;
-    }
+    // public function rating(){
+    //     $ratings = $this->ratings;
+    //     $values = [];
+    //     foreach ($ratings as $rating) {
+    //         // $values.push($rating->value);
+    //     }
+    //     $count = $this->ratings->count();
+    //     return $ratings;
+    // }
 
     public function location(){
         return $this->hasOne(Location::class);
@@ -48,8 +49,8 @@ class Listing extends Model
         return $this->belongsTo(Brand::class);
     }
 
-    public function categories(){
-        return $this->belongsToMany(Category::class);
+    public function category(){
+        return $this->belongsTo(Category::class);
     }
 
     public function tags(){
@@ -60,12 +61,16 @@ class Listing extends Model
         return $this->hasMany(Image::class);
     }
 
-    public function rateValue(){
+    public function rating(){
         $rates = $this->ratings;
         $value = 0;
 
         foreach ($rates as $rate) {
             $value += $rate->value;
+        }
+
+        if($rates->count() == 0){
+            return 0;
         }
 
         return $value/$rates->count();

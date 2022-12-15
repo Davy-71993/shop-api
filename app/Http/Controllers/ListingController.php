@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RatingRequest;
+use App\Http\Requests\StoreListingRequest;
 use App\Http\Resources\ListingListResource;
 use App\Http\Resources\ListingResource;
 use App\Models\Brand;
@@ -32,42 +34,29 @@ class ListingController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreListingRequest $request)
     {
-        // $brand = Brand::firstOrCreate(['name' => $request->brand]);
-        // $categories = [];
-        // $tags = [];
+        $brand = Brand::firstOrCreate(['name' => $request->brand]);
 
-        // $listing = Auth::user()->listings()->create([
-        //     'name' => $request->name,
-        //     'price' => $request->price,
-        //     'quantity' => $request->quantity,
-        //     'description' => $request->description,
-        //     'condition' => $request->condition,
-        //     'brand_id' => $brand['id']
-        // ]);
+        $listing = Listing::create([
+            'name' => $request->name,
+            'price' => $request->price,
+            'quantity' => $request->quantity,
+            'description' => $request->description,
+            'condition' => $request->condition,
+            'brand_id' => $brand['id'],
+            'category_id' => $request->category_id,
+            'user_id' => Auth::user()->id
+        ]);
 
-        // $listing->location()->create($request->location);
+        $listing->location()->create($request->location);
 
-        if($request->hasFile('image')){
-            // $formFields['logo'] = $request->file('logo')->store('logos', 'public');
-            return $this->success($request->image);
-        }else{
-            return $this->success($request->all());
+        foreach ($request->tags as $key => $tag) {
+            $tc = Tag::firstOrCreate(['name' => $tag]);
+            $listing->tags()->attach($tc);
         }
 
-        // foreach ($request->categories as $key => $category) {
-        //     $tc = Category::firstOrCreate(['name' => $category]);
-        //     $listing->categories()->attach($tc);
-        //     $brand->categories()->syncWithoutDetaching($tc);
-        // }
-
-        // foreach ($request->tags as $key => $tag) {
-        //     $tc = Tag::firstOrCreate(['name' => $tag]);
-        //     $listing->tags()->attach($tc);
-        // }
-
-        // return $this->success(new ListingListResource($listing));
+        return $this->success(new ListingResource($listing));
     }
 
     /**
@@ -78,7 +67,9 @@ class ListingController extends Controller
      */
     public function show($id)
     {
-        //
+        $listing = Listing::find($id);
+
+        return new ListingResource($listing);
     }
 
     /**
@@ -88,8 +79,9 @@ class ListingController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function rate(Request $request, $id)
+    public function rate(RatingRequest $request, $id)
     {
+        
         $rating = Rating::where([
             'user_id' => Auth::user()->id,
             'listing_id' => $id
@@ -98,6 +90,7 @@ class ListingController extends Controller
         if ($rating) {
             $rating['value'] = $request->rating;
             $rating->save();
+
         } else {
             $rating = Rating::create([
                 'user_id' => Auth::user()->id,

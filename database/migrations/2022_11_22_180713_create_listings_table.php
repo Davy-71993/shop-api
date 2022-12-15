@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('condition');
             $table->foreignId('user_id')->onDelete('cascade');
             $table->foreignId('brand_id');
+            $table->foreignId('category_id');
             // $table->foreignId('category_id')->nullable()->default(null);
         });
     }

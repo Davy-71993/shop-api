@@ -27,8 +27,10 @@ class ListingResource extends JsonResource
                 'name' => $this->user->name,
                 'email' => $this->user->email,
             ],
-            'tags' => $this->tags()->get(['name']),
-            'categories' => $this->categories()->get(['name'])
+            'tags' => ToStringResource::collection($this->tags()->get()),
+            'category' => $this->category->name,
+            'location'=> new LocationResource($this->location),
+            'rating' => $this->rating()
         ];
     }
 }

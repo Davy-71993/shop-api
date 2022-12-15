@@ -9,7 +9,7 @@ class Location extends Model
 {
     use HasFactory;
 
-    protected $fillable = [ 'longitude', 'latitude' ];
+    protected $fillable = [ 'longitude', 'latitude', 'state', 'city' ];
 
     public function listing(){
         return $this->belongsTo(Listing::class);
